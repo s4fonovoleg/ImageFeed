@@ -38,27 +38,27 @@
                                                         <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                                     </userDefinedRuntimeAttributes>
                                                 </imageView>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ebX-JF-w3W" userLabel="Like Button">
-                                                    <rect key="frame" x="336" y="16" width="30" height="28"/>
-                                                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                    <state key="normal" image="RedLike"/>
-                                                </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="13 мая 2023" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6wN-0B-Sm6" userLabel="Date Label">
                                                     <rect key="frame" x="24" y="196.66666666666666" width="74" height="15.333333333333343"/>
                                                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="13"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ebX-JF-w3W" userLabel="Like Button">
+                                                    <rect key="frame" x="333" y="4" width="44" height="44"/>
+                                                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                    <state key="normal" image="RedLike"/>
+                                                </button>
                                             </subviews>
                                             <color key="backgroundColor" name="ypBlack"/>
                                             <constraints>
-                                                <constraint firstItem="tg4-bG-725" firstAttribute="trailing" secondItem="ebX-JF-w3W" secondAttribute="trailing" constant="11" id="1LH-Wg-UQK"/>
+                                                <constraint firstItem="tg4-bG-725" firstAttribute="trailing" secondItem="ebX-JF-w3W" secondAttribute="trailing" id="1LH-Wg-UQK"/>
                                                 <constraint firstItem="tg4-bG-725" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="6wN-0B-Sm6" secondAttribute="trailing" constant="8" id="8if-Nb-zb6"/>
                                                 <constraint firstAttribute="bottom" secondItem="tg4-bG-725" secondAttribute="bottom" constant="4" id="8nC-dD-cJQ"/>
                                                 <constraint firstItem="tg4-bG-725" firstAttribute="bottom" secondItem="6wN-0B-Sm6" secondAttribute="bottom" constant="8" id="92f-J9-tvG"/>
                                                 <constraint firstAttribute="trailing" secondItem="tg4-bG-725" secondAttribute="trailing" constant="16" id="Gbz-ma-NIj"/>
                                                 <constraint firstItem="6wN-0B-Sm6" firstAttribute="leading" secondItem="tg4-bG-725" secondAttribute="leading" constant="8" id="O8K-YJ-mrE"/>
-                                                <constraint firstItem="ebX-JF-w3W" firstAttribute="top" secondItem="tg4-bG-725" secondAttribute="top" constant="12" id="Qt4-v4-jsm"/>
+                                                <constraint firstItem="ebX-JF-w3W" firstAttribute="top" secondItem="tg4-bG-725" secondAttribute="top" id="Qt4-v4-jsm"/>
                                                 <constraint firstItem="tg4-bG-725" firstAttribute="top" secondItem="vjs-0V-xcZ" secondAttribute="top" constant="4" id="aDm-el-wqk"/>
                                                 <constraint firstItem="tg4-bG-725" firstAttribute="leading" secondItem="vjs-0V-xcZ" secondAttribute="leading" constant="16" id="ivd-31-cZf"/>
                                             </constraints>
@@ -96,7 +96,7 @@
     </scenes>
     <resources>
         <image name="0" width="200" height="132"/>
-        <image name="RedLike" width="30" height="28"/>
+        <image name="RedLike" width="44" height="44"/>
         <namedColor name="ypBlack">
             <color red="0.10199999809265137" green="0.10599999874830246" blue="0.13300000131130219" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

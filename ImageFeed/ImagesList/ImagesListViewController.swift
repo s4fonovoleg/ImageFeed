@@ -52,11 +52,9 @@ class ImagesListViewController: UIViewController {
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		
-		tableView.contentInset = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
 	}
 	
-	func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+	private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
 		let photoName = photosName[indexPath.row]
 		
 		guard let image = UIImage(named: photoName) else {
