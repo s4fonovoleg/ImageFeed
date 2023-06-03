@@ -1,9 +1,9 @@
 import UIKit
 
 final class SingleImageViewController: UIViewController {
-	@IBOutlet weak var imageView: UIImageView!
+	@IBOutlet private weak var imageView: UIImageView!
 	
-	@IBOutlet weak var scrollView: UIScrollView!
+	@IBOutlet private weak var scrollView: UIScrollView!
 
 	var image: UIImage! {
 		didSet {
@@ -13,11 +13,11 @@ final class SingleImageViewController: UIViewController {
 		}
 	}
 
-	@IBAction func didTapBackButton() {
+	@IBAction private func didTapBackButton() {
 		dismiss(animated: true)
 	}
 
-	@IBAction func didTapShareButton() {
+	@IBAction private func didTapShareButton() {
 		guard let image = image else { return }
 		let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
 		

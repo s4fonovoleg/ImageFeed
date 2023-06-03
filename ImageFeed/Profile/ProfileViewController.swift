@@ -3,11 +3,57 @@ import UIKit
 final class ProfileViewController : UIViewController {
 	// MARK: Private properties
 	
-	private var profileImageView: UIImageView?
-	private var logoutButton: UIButton?
-	private var nameLabel: UILabel?
-	private var loginNameLabel: UILabel?
-	private var descriptionLabel: UILabel?
+	private lazy var profileImageView: UIImageView = {
+		let profileImage = UIImage(named: "EmptyProfileImage")
+		let profileImageView = UIImageView(image: profileImage)
+
+		profileImageView.translatesAutoresizingMaskIntoConstraints = false
+
+		return profileImageView
+	}()
+	private lazy var logoutButton: UIButton = {
+		let logoutImage = UIImage(named: "LogoutImage")
+		
+		let logoutButton = UIButton.systemButton(
+			with: logoutImage ?? UIImage(),
+			target: self,
+			action: #selector(logoutButtonTapped))
+
+		logoutButton.translatesAutoresizingMaskIntoConstraints = false
+		logoutButton.tintColor = .ypRed
+
+		return logoutButton
+	}()
+	private lazy var nameLabel: UILabel = {
+		let nameLabel = UILabel()
+
+		nameLabel.translatesAutoresizingMaskIntoConstraints = false
+		nameLabel.text = "Имя пользователя"
+		nameLabel.font = .systemFont(ofSize: 23, weight: .bold)
+		nameLabel.textColor = .ypWhite
+		
+		return nameLabel
+	}()
+	private lazy var loginNameLabel: UILabel = {
+		let loginNameLabel = UILabel()
+
+		loginNameLabel.translatesAutoresizingMaskIntoConstraints = false
+		loginNameLabel.text = "@username"
+		loginNameLabel.font = .systemFont(ofSize: 13, weight: .regular)
+		loginNameLabel.textColor = .ypGray
+		
+		return loginNameLabel
+	}()
+	private lazy var descriptionLabel: UILabel = {
+		let descriptionLabel = UILabel()
+		
+		descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+		descriptionLabel.text = "Hello, Wordl!"
+		descriptionLabel.font = .systemFont(ofSize: 13, weight: .regular)
+		descriptionLabel.textColor = .ypWhite
+		
+		return descriptionLabel
+	}()
 	
 	// MARK: Lifecycle
 	
@@ -24,12 +70,6 @@ final class ProfileViewController : UIViewController {
 	// MARK: Profile Image
 	
 	private func addProfileImageView() {
-		let profileImage = UIImage(named: "EmptyProfileImage")
-		profileImageView = UIImageView(image: profileImage)
-		
-		guard let profileImageView else { return }
-		
-		profileImageView.translatesAutoresizingMaskIntoConstraints = false
 		view.addSubview(profileImageView)
 		
 		NSLayoutConstraint.activate([
@@ -43,22 +83,6 @@ final class ProfileViewController : UIViewController {
 	// MARK: Logout Button
 	
 	private func addLogoutButton() {
-		guard let profileImageView else { return }
-
-		let logoutImage = UIImage(named: "LogoutImage")
-		
-		guard let logoutImage else { return }
-		
-		logoutButton = UIButton.systemButton(
-			with: logoutImage,
-			target: self,
-			action: #selector(logoutButtonTapped))
-		
-		guard let logoutButton else { return }
-		
-		logoutButton.translatesAutoresizingMaskIntoConstraints = false
-		logoutButton.tintColor = .ypRed
-		
 		view.addSubview(logoutButton)
 		
 		NSLayoutConstraint.activate([
@@ -76,17 +100,6 @@ final class ProfileViewController : UIViewController {
 	// MARK: Name Label
 	
 	private func addNameLabel() {
-		guard let profileImageView else { return }
-		
-		nameLabel = UILabel()
-		
-		guard let nameLabel else { return }
-		
-		nameLabel.translatesAutoresizingMaskIntoConstraints = false
-		nameLabel.text = "Имя пользователя"
-		nameLabel.font = .systemFont(ofSize: 23, weight: .semibold)
-		nameLabel.textColor = .ypWhite
-		
 		view.addSubview(nameLabel)
 		
 		NSLayoutConstraint.activate([
@@ -99,18 +112,6 @@ final class ProfileViewController : UIViewController {
 	// MARK: Login Name Label
 	
 	private func addLoginNameLabel() {
-		guard let profileImageView,
-			  let nameLabel else { return }
-		
-		loginNameLabel = UILabel()
-		
-		guard let loginNameLabel else { return }
-		
-		loginNameLabel.translatesAutoresizingMaskIntoConstraints = false
-		loginNameLabel.text = "@username"
-		loginNameLabel.font = .systemFont(ofSize: 13, weight: .regular)
-		loginNameLabel.textColor = .ypGray
-		
 		view.addSubview(loginNameLabel)
 		
 		NSLayoutConstraint.activate([
@@ -123,18 +124,6 @@ final class ProfileViewController : UIViewController {
 	// MARK: Description Label
 	
 	private func addDescriptionLabel() {
-		guard let profileImageView,
-			  let loginNameLabel else { return }
-		
-		descriptionLabel = UILabel()
-		
-		guard let descriptionLabel else { return }
-		
-		descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-		descriptionLabel.text = "Hello, Wordl!"
-		descriptionLabel.font = .systemFont(ofSize: 13, weight: .regular)
-		descriptionLabel.textColor = .ypWhite
-		
 		view.addSubview(descriptionLabel)
 		
 		NSLayoutConstraint.activate([
