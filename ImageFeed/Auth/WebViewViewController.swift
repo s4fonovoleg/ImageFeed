@@ -4,6 +4,11 @@ import WebKit
 /// Адрес сервиса авторизации.
 fileprivate let UnsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
 
+protocol WebViewViewControllerDelegate {
+	func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
+	func webViewViewControllerDidCancel(_ vc: WebViewViewController)
+}
+
 final class WebViewViewController : UIViewController {
 	/// WKWebView авторизации.
 	@IBOutlet private var webView: WKWebView!
@@ -20,7 +25,7 @@ final class WebViewViewController : UIViewController {
 	/// Делегат обработки авторизации.
 	var delegate: WebViewViewControllerDelegate?
 	
-	public override func viewWillAppear(_ animated: Bool) {
+	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		
 		webView.addObserver(
@@ -31,7 +36,7 @@ final class WebViewViewController : UIViewController {
 		updateProgress()
 	}
 	
-	public override func viewDidDisappear(_ animated: Bool) {
+	override func viewDidDisappear(_ animated: Bool) {
 		super.viewDidDisappear(animated)
 		
 		webView.removeObserver(
@@ -40,7 +45,7 @@ final class WebViewViewController : UIViewController {
 			context: nil)
 	}
 	
-	public override func viewDidLoad() {
+	override func viewDidLoad() {
 		super.viewDidLoad()
 		webView.navigationDelegate = self
 		
@@ -100,9 +105,4 @@ extension WebViewViewController : WKNavigationDelegate {
 			return nil
 		}
 	}
-}
-
-protocol WebViewViewControllerDelegate {
-	func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
-	func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }
