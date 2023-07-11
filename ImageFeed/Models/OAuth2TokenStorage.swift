@@ -1,6 +1,6 @@
 import Foundation
 
-class OAuth2TokenStorage {
+final class OAuth2TokenStorage {
 	/// Имя токена в хранилище.
 	let tokenName = "UnsplashAuthToken"
 	

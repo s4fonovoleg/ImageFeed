@@ -1,6 +1,6 @@
 import UIKit
 
-class SplashViewController: UIViewController {
+final class SplashViewController: UIViewController {
 	/// Id сегвея к экрану авторизации.
 	let ShowAuthViewControllerSegueId = "ShowAuthViewController"
 	
