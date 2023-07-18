@@ -34,11 +34,9 @@ final class SplashViewController: UIViewController {
 	
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
-
-		KeychainWrapper.standard.removeObject(forKey: TokenName)
 		
 		let token: String? = KeychainWrapper.standard.string(forKey: TokenName)
-		
+
 		if let token {
 			fetchProfile(token: token)
 		} else {
@@ -75,24 +73,6 @@ final class SplashViewController: UIViewController {
 		])
 	}
 }
-
-//extension SplashViewController {
-//	/// Подготовка к переходу к экрану авторизации.
-//	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//		if segue.identifier == ShowAuthViewControllerSegueId {
-//			guard
-//				let navigationController = segue.destination as? UINavigationController,
-//				let viewController = navigationController.viewControllers.first as? AuthViewController
-//			else {
-//				fatalError("Failed to prepare for \(ShowAuthViewControllerSegueId)")
-//			}
-//
-//			viewController.delegate = self
-//		} else {
-//			super.prepare(for: segue, sender: sender)
-//		}
-//	}
-//}
 
 extension SplashViewController: AuthViewControllerDelegate {
 	/// Метод делегата после получения кода авторизации.

@@ -86,7 +86,9 @@
                             <constraint firstItem="I5j-h5-kiJ" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="iCA-qg-Kpw"/>
                         </constraints>
                     </view>
+                    <tabBarItem key="tabBarItem" title="" image="tab_editorial_active" id="IJj-48-sAc"/>
                     <navigationItem key="navigationItem" id="mGZ-mJ-I8e"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="tableView" destination="I5j-h5-kiJ" id="ZSI-aA-ewA"/>
                         <segue destination="k5a-ws-gge" kind="presentation" identifier="ShowSingleImage" id="Q0i-ku-St7"/>
@@ -290,6 +292,7 @@
         <image name="ShareButton" width="51" height="50"/>
         <image name="UnsplashLogo" width="60" height="60"/>
         <image name="nav_back_button" width="24" height="24"/>
+        <image name="tab_editorial_active" width="30" height="30"/>
         <namedColor name="ypBlack">
             <color red="0.10199999809265137" green="0.10599999874830246" blue="0.13300000131130219" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
