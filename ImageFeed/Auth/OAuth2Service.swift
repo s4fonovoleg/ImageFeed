@@ -1,4 +1,5 @@
 import Foundation
+import SwiftKeychainWrapper
 
 /// Сервис авторизации.
 final class OAuth2Service {
@@ -7,6 +8,10 @@ final class OAuth2Service {
 	
 	/// Сессия.
 	private let urlSession = URLSession.shared
+	
+	private var task: URLSessionTask?
+	
+	private var lastCode: String?
 
 	/// Хранилище токена.
 	private let tokenStorage = OAuth2TokenStorage()
@@ -14,10 +19,10 @@ final class OAuth2Service {
 	/// Токен.
 	private var authToken: String {
 		get {
-			tokenStorage.token
+			KeychainWrapper.standard.string(forKey: TokenName) ?? String()
 		}
 		set {
-			tokenStorage.token = newValue
+			KeychainWrapper.standard.set(newValue, forKey: TokenName)
 		}
 	}
 	
@@ -26,6 +31,12 @@ final class OAuth2Service {
 	///   - code: код авторизации.
 	///   - completion: метод обработки результата.
 	func fetchAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
+		assert(Thread.isMainThread)
+		if lastCode == code { return }
+		
+		task?.cancel()
+		lastCode = code
+		
 		let request = authTokenRequest(code: code)
 		let task = object(for: request) { [weak self] result in
 			guard let self else { return }
@@ -37,9 +48,14 @@ final class OAuth2Service {
 				
 				completion(.success(authToken))
 			case .failure(let error):
+				self.lastCode = nil
 				completion(.failure(error))
 			}
+			
+			self.task = nil
 		}
+		
+		self.task = task
 		task.resume()
 	}
 }
