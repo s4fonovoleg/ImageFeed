@@ -9,6 +9,8 @@ final class ProfileService {
 	
 	private(set) var profile: Profile?
 
+	private init() { }
+	
 	func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
 		assert(Thread.isMainThread)
 		task?.cancel()
@@ -47,7 +49,9 @@ extension ProfileService {
 			let response = result.flatMap { data -> Result<ProfileResult, Error> in
 				Result { try decoder.decode(ProfileResult.self, from: data) }
 			}
-			completion(response)
+			DispatchQueue.main.async {
+				completion(response)
+			}
 		}
 	}
 
@@ -62,30 +66,3 @@ extension ProfileService {
 	}
 }
 
-struct ProfileResult: Codable {
-	let username: String
-	let firstName: String
-	let lastName: String
-	let bio: String?
-	
-	private enum CodingKeys: String, CodingKey {
-		case username = "username"
-		case firstName = "first_name"
-		case lastName = "last_name"
-		case bio = "bio"
-	}
-}
-
-struct Profile {
-	let username: String
-	let name: String
-	let loginName: String
-	let bio: String
-	
-	init(_ profileResult: ProfileResult) {
-		username = profileResult.username
-		name = "\(profileResult.firstName) \(profileResult.lastName)"
-		loginName = "@\(profileResult.username)"
-		bio = profileResult.bio ?? String()
-	}
-}

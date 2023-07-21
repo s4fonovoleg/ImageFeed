@@ -32,7 +32,8 @@ final class OAuth2Service {
 	///   - completion: метод обработки результата.
 	func fetchAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
 		assert(Thread.isMainThread)
-		if lastCode == code { return }
+
+		guard lastCode != code else { return }
 		
 		task?.cancel()
 		lastCode = code

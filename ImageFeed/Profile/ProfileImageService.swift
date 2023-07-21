@@ -12,9 +12,12 @@ final class ProfileImageService {
 	
 	private (set) var avatarURL: String?
 	
-	func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
+	private init() { }
+	
+	func fetchProfileImageURL(username: String, _ completion: ((Result<String, Error>) -> Void)?) {
 		assert(Thread.isMainThread)
 		task?.cancel()
+
 		let token: String? = KeychainWrapper.standard.string(forKey: TokenName)
 		
 		guard let token else { return }
@@ -33,10 +36,10 @@ final class ProfileImageService {
 					name: ProfileImageService.DidChangeNotification,
 					object: self,
 					userInfo: ["URL": avatarURL])
-				completion(.success(avatarURL))
+				completion?(.success(avatarURL))
 			case .failure(let error):
 				print(error.localizedDescription)
-				completion(.failure(error))
+				completion?(.failure(error))
 			}
 
 			self.task = nil
@@ -71,16 +74,4 @@ extension ProfileImageService {
 		
 		return request
 	}
-}
-
-struct UserResult: Codable {
-	let profileImage: ProfileImage
-	
-	private enum CodingKeys: String, CodingKey {
-		case profileImage = "profile_image"
-	}
-}
-
-struct ProfileImage: Codable {
-	let small: String
 }

@@ -34,7 +34,7 @@ final class SplashViewController: UIViewController {
 	
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
-		
+
 		let token: String? = KeychainWrapper.standard.string(forKey: TokenName)
 
 		if let token {
@@ -84,14 +84,15 @@ extension SplashViewController: AuthViewControllerDelegate {
 			guard let self = self else { return }
 			
 			UIBlockingProgressHUD.show()
-			self.fetchAuthToken(code)
+			self.fetchAuthToken(vc, code)
+			
 		}
 	}
 	
 	/// Получение токена аутентификации.
 	/// - Parameters:
 	///   - code: код авторизации.
-	private func fetchAuthToken(_ code: String) {
+	private func fetchAuthToken(_ vc: AuthViewController, _ code: String) {
 		authService.fetchAuthToken(code: code) { [weak self] result in
 			guard let self = self else { return }
 			
@@ -100,36 +101,28 @@ extension SplashViewController: AuthViewControllerDelegate {
 				fetchProfile(token: token)
 			case .failure:
 				UIBlockingProgressHUD.dismiss()
+				AlertHelper.showErrorAlert(vc)
 				break
 			}
 		}
 	}
 	
 	private func fetchProfile(token: String) {
-		profileService.fetchProfile(token) { result in
+		profileService.fetchProfile(token) { [weak self] result in
+			guard let self else { return }
+
 			UIBlockingProgressHUD.dismiss()
 
 			switch result {
 			case .success(let profile):
-				ProfileImageService.shared.fetchProfileImageURL(username: profile.username) { _ in }
+				ProfileImageService.shared.fetchProfileImageURL(username: profile.username, nil)
 				self.switchToTabBarController()
 				break;
 			case .failure(let error):
 				print(error.localizedDescription)
-				self.showErrorAlert()
+				AlertHelper.showErrorAlert(self)
 				break;
 			}
 		}
-	}
-	
-	private func showErrorAlert() {
-		let alert = UIAlertController(
-			title: "Что-то пошло не так(",
-			message: "Не удалось войти в систему",
-			preferredStyle: .alert)
-		let action = UIAlertAction(title: "Ок", style: .default)
-
-		alert.addAction(action)
-		present(alert, animated: true)
 	}
 }
