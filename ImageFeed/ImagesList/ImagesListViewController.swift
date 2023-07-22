@@ -39,6 +39,7 @@ extension ImagesListViewController : UITableViewDataSource {
 final class ImagesListViewController: UIViewController {
 	@IBOutlet private var tableView: UITableView!
 	
+	private var imageListServiceObserver: NSObjectProtocol?
 	private let ShowSingleImageSegueIdentifier  = "ShowSingleImage"
 	private let photosName: [String] = Array(0..<20).map{ "\($0)" }
 	
@@ -65,6 +66,16 @@ final class ImagesListViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		
+		imageListServiceObserver = NotificationCenter.default
+			.addObserver(
+				forName: ImagesListService.DidChangeNotification,
+				object: nil,
+				queue: .main
+			) { [weak self] _ in
+				guard let self = self else { return }
+				//self.updateAvatar()
+			}
 	}
 	
 	private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
