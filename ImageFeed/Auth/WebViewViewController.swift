@@ -25,24 +25,19 @@ final class WebViewViewController : UIViewController {
 	/// Делегат обработки авторизации.
 	var delegate: WebViewViewControllerDelegate?
 	
+	private var estimatedProgressObservation: NSKeyValueObservation?
+	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		
-		webView.addObserver(
-			self,
-			forKeyPath: #keyPath(WKWebView.estimatedProgress),
-			options: .new,
-			context: nil)
+		estimatedProgressObservation = webView.observe(
+			\.estimatedProgress,
+			options: [],
+			changeHandler: { [weak self] _, _ in
+				guard let self = self else { return }
+				self.updateProgress()
+			})
 		updateProgress()
-	}
-	
-	override func viewDidDisappear(_ animated: Bool) {
-		super.viewDidDisappear(animated)
-		
-		webView.removeObserver(
-			self,
-			forKeyPath: #keyPath(WKWebView.estimatedProgress),
-			context: nil)
 	}
 	
 	override func viewDidLoad() {
@@ -59,15 +54,6 @@ final class WebViewViewController : UIViewController {
 		let url = urlComponents.url!
 		let request = URLRequest(url: url)
 		webView.load(request)
-	}
-	
-	/// Подписка на изменение estimatedProgress у WKWebView.
-	override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-		if keyPath == #keyPath(WKWebView.estimatedProgress) {
-			updateProgress()
-		} else {
-			super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-		}
 	}
 	
 	/// Обновление прогресса в progressView.

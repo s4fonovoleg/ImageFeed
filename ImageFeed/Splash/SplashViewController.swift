@@ -1,22 +1,55 @@
 import UIKit
+import ProgressHUD
+import SwiftKeychainWrapper
 
 final class SplashViewController: UIViewController {
-	/// Id сегвея к экрану авторизации.
+	private lazy var splashImageView: UIImageView = {
+		let splashImage = UIImage(named: "Vector")
+		let splashImageView = UIImageView(image: splashImage)
+
+		splashImageView.translatesAutoresizingMaskIntoConstraints = false
+
+		return splashImageView
+	}()
+	
+	private lazy var authViewController: AuthViewController = {
+		let storyboard = UIStoryboard(name: "Main", bundle: .main)
+		let authViewController = storyboard.instantiateViewController(
+			withIdentifier: "AuthViewController"
+		) as? AuthViewController
+		
+		guard let authViewController else { return AuthViewController() }
+		
+		authViewController.modalPresentationStyle = .fullScreen
+		authViewController.delegate = self
+
+		return authViewController
+	}()
+
 	let ShowAuthViewControllerSegueId = "ShowAuthViewController"
 	
-	/// Сервис аутентификации.
 	private let authService = OAuth2Service()
+	
+	private let profileService = ProfileService.shared
 	
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 
-		let token = OAuth2TokenStorage().token
-		
-		if token.isEmpty {
-			performSegue(withIdentifier: ShowAuthViewControllerSegueId, sender: nil)
+		let token: String? = KeychainWrapper.standard.string(forKey: TokenName)
+
+		if let token {
+			fetchProfile(token: token)
 		} else {
-			switchToTabBarController()
+			present(authViewController, animated: true)
 		}
+	}
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		
+		view.backgroundColor = .ypBlack
+		
+		addSplashLogo()
 	}
 	
 	/// Переход к авторизации.
@@ -28,23 +61,16 @@ final class SplashViewController: UIViewController {
 		   
 		window.rootViewController = tabBarController
 	}
-}
-
-extension SplashViewController {
-	/// Подготовка к переходу к экрану авторизации.
-	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-		if segue.identifier == ShowAuthViewControllerSegueId {
-			guard
-				let navigationController = segue.destination as? UINavigationController,
-				let viewController = navigationController.viewControllers.first as? AuthViewController
-			else {
-				fatalError("Failed to prepare for \(ShowAuthViewControllerSegueId)")
-			}
-
-			viewController.delegate = self
-		} else {
-			super.prepare(for: segue, sender: sender)
-		}
+	
+	private func addSplashLogo() {
+		view.addSubview(splashImageView)
+		
+		NSLayoutConstraint.activate([
+			splashImageView.widthAnchor.constraint(equalToConstant: 75),
+			splashImageView.heightAnchor.constraint(equalToConstant: 77),
+			splashImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+			splashImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+		])
 	}
 }
 
@@ -57,22 +83,45 @@ extension SplashViewController: AuthViewControllerDelegate {
 		dismiss(animated: true) { [weak self] in
 			guard let self = self else { return }
 			
-			self.fetchAuthToken(code)
+			UIBlockingProgressHUD.show()
+			self.fetchAuthToken(vc, code)
+			
 		}
 	}
 	
 	/// Получение токена аутентификации.
 	/// - Parameters:
 	///   - code: код авторизации.
-	private func fetchAuthToken(_ code: String) {
+	private func fetchAuthToken(_ vc: AuthViewController, _ code: String) {
 		authService.fetchAuthToken(code: code) { [weak self] result in
 			guard let self = self else { return }
+			
 			switch result {
-			case .success:
-				self.switchToTabBarController()
+			case .success(let token):
+				fetchProfile(token: token)
 			case .failure:
-				
+				UIBlockingProgressHUD.dismiss()
+				vc.showErrorAlert()
 				break
+			}
+		}
+	}
+	
+	private func fetchProfile(token: String) {
+		profileService.fetchProfile(token) { [weak self] result in
+			guard let self else { return }
+
+			UIBlockingProgressHUD.dismiss()
+
+			switch result {
+			case .success(let profile):
+				ProfileImageService.shared.fetchProfileImageURL(username: profile.username, nil)
+				self.switchToTabBarController()
+				break;
+			case .failure(let error):
+				print(error.localizedDescription)
+				self.showErrorAlert()
+				break;
 			}
 		}
 	}

@@ -1,7 +1,12 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController : UIViewController {
-	// MARK: Private properties
+	private let profileService = ProfileService.shared
+	
+	private var profileImageServiceObserver: NSObjectProtocol?
+	
+	// MARK: Private view properties
 	
 	private lazy var profileImageView: UIImageView = {
 		let profileImage = UIImage(named: "EmptyProfileImage")
@@ -11,6 +16,7 @@ final class ProfileViewController : UIViewController {
 
 		return profileImageView
 	}()
+
 	private lazy var logoutButton: UIButton = {
 		let logoutImage = UIImage(named: "LogoutImage")
 		
@@ -24,6 +30,7 @@ final class ProfileViewController : UIViewController {
 
 		return logoutButton
 	}()
+
 	private lazy var nameLabel: UILabel = {
 		let nameLabel = UILabel()
 
@@ -34,6 +41,7 @@ final class ProfileViewController : UIViewController {
 		
 		return nameLabel
 	}()
+
 	private lazy var loginNameLabel: UILabel = {
 		let loginNameLabel = UILabel()
 
@@ -44,6 +52,7 @@ final class ProfileViewController : UIViewController {
 		
 		return loginNameLabel
 	}()
+
 	private lazy var descriptionLabel: UILabel = {
 		let descriptionLabel = UILabel()
 		
@@ -60,11 +69,25 @@ final class ProfileViewController : UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
+		view.backgroundColor = .ypBlack
+		
 		addProfileImageView()
 		addLogoutButton()
 		addNameLabel()
 		addLoginNameLabel()
 		addDescriptionLabel()
+		updateProfileDetails()
+		
+		profileImageServiceObserver = NotificationCenter.default
+			.addObserver(
+				forName: ProfileImageService.DidChangeNotification,
+				object: nil,
+				queue: .main
+			) { [weak self] _ in
+				guard let self = self else { return }
+				self.updateAvatar()
+			}
+		updateAvatar()
 	}
 	
 	// MARK: Profile Image
@@ -131,5 +154,22 @@ final class ProfileViewController : UIViewController {
 			descriptionLabel.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
 			descriptionLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 16)
 		])
+	}
+	
+	private func updateProfileDetails() {
+		guard let profile = profileService.profile else { return }
+		
+		self.nameLabel.text = profile.name
+		self.loginNameLabel.text = profile.loginName
+		self.descriptionLabel.text = profile.bio
+	}
+	
+	private func updateAvatar() {
+		guard
+			let profileImageURL = ProfileImageService.shared.avatarURL,
+			let url = URL(string: profileImageURL)
+		else { return }
+		
+		profileImageView.kf.setImage(with: url)
 	}
 }

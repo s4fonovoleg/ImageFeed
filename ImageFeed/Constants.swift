@@ -14,3 +14,5 @@ let RedirectURI = "urn:ietf:wg:oauth:2.0:oob"
 
 /// Контекст доступа.
 let AccessScope = "public+read_user+write_likes"
+
+let TokenName = "UnsplashAuthToken"
