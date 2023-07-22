@@ -101,7 +101,7 @@ extension SplashViewController: AuthViewControllerDelegate {
 				fetchProfile(token: token)
 			case .failure:
 				UIBlockingProgressHUD.dismiss()
-				AlertHelper.showErrorAlert(vc)
+				vc.showErrorAlert()
 				break
 			}
 		}
@@ -120,7 +120,7 @@ extension SplashViewController: AuthViewControllerDelegate {
 				break;
 			case .failure(let error):
 				print(error.localizedDescription)
-				AlertHelper.showErrorAlert(self)
+				self.showErrorAlert()
 				break;
 			}
 		}

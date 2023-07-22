@@ -1,7 +1,7 @@
 import UIKit
 
-class AlertHelper {
-	static func showErrorAlert(_ vc: UIViewController) {
+extension UIViewController {
+	func showErrorAlert() {
 		let alert = UIAlertController(
 			title: "Что-то пошло не так(",
 			message: "Не удалось войти в систему",
@@ -9,6 +9,6 @@ class AlertHelper {
 		let action = UIAlertAction(title: "Ок", style: .default)
 
 		alert.addAction(action)
-		vc.present(alert, animated: true)
+		present(alert, animated: true)
 	}
 }
