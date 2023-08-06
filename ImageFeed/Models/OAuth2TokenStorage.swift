@@ -1,16 +1,13 @@
 import Foundation
+import SwiftKeychainWrapper
 
 final class OAuth2TokenStorage {
-	/// Имя токена в хранилище.
-	let tokenName = "UnsplashAuthToken"
-	
-	/// токен аутентификации.
-	var token: String {
+	static var token: String {
 		get {
-			UserDefaults.standard.string(forKey: tokenName) ?? String()
+			KeychainWrapper.standard.string(forKey: TokenName) ?? String()
 		}
 		set {
-			UserDefaults.standard.set(newValue, forKey: tokenName)
+			KeychainWrapper.standard.set(newValue, forKey: TokenName)
 		}
 	}
 }

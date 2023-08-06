@@ -35,12 +35,12 @@ final class SplashViewController: UIViewController {
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 
-		let token: String? = KeychainWrapper.standard.string(forKey: TokenName)
+		let token = OAuth2TokenStorage.token
 
-		if let token {
-			fetchProfile(token: token)
-		} else {
+		if token.isEmpty {
 			present(authViewController, animated: true)
+		} else {
+			fetchProfile(token: token)
 		}
 	}
 	
@@ -115,7 +115,7 @@ extension SplashViewController: AuthViewControllerDelegate {
 
 			switch result {
 			case .success(let profile):
-				ProfileImageService.shared.fetchProfileImageURL(username: profile.username, nil)
+				ProfileImageService.shared.fetchProfileImageURL(username: profile.username)
 				self.switchToTabBarController()
 				break;
 			case .failure(let error):

@@ -1,5 +1,7 @@
 import UIKit
+import WebKit
 import Kingfisher
+import SwiftKeychainWrapper
 
 final class ProfileViewController : UIViewController {
 	private let profileService = ProfileService.shared
@@ -117,7 +119,43 @@ final class ProfileViewController : UIViewController {
 	}
 	
 	@objc private func logoutButtonTapped() {
+		let alert = UIAlertController(
+			title: "Выйти из профиля?",
+			message: nil,
+			preferredStyle: .alert)
+		let logoutAction = UIAlertAction(title: "Выйти", style: .default) { _ in
+			self.logout()
+		}
+		let cancelAction = UIAlertAction(title: "Отмена", style: .cancel)
+
+		alert.addAction(logoutAction)
+		alert.addAction(cancelAction)
+		present(alert, animated: true)
+	}
+	
+	private func logout() {
+		KeychainWrapper.standard.removeObject(forKey: TokenName)
+
+		HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+		WKWebsiteDataStore.default().fetchDataRecords(
+			ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+			records.forEach { record in
+				WKWebsiteDataStore.default().removeData(
+					ofTypes: record.dataTypes,
+					for: [record],
+					completionHandler: {})
+			}
+		}
 		
+		switchSplashViewController()
+	}
+	
+	private func switchSplashViewController() {
+		guard let window = UIApplication.shared.windows.first else { fatalError("Invalid Configuration") }
+		
+		let splashController = SplashViewController()
+		
+		window.rootViewController = splashController
 	}
 	
 	// MARK: Name Label

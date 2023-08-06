@@ -14,13 +14,13 @@ final class ProfileImageService {
 	
 	private init() { }
 	
-	func fetchProfileImageURL(username: String, _ completion: ((Result<String, Error>) -> Void)?) {
+	func fetchProfileImageURL(username: String, _ completion: ((Result<String, Error>) -> Void)? = nil) {
 		assert(Thread.isMainThread)
 		task?.cancel()
 
-		let token: String? = KeychainWrapper.standard.string(forKey: TokenName)
+		let token = OAuth2TokenStorage.token
 		
-		guard let token else { return }
+		guard !token.isEmpty else { return }
 		
 		let request = profileImageRequest(token: token, username: username)
 		let task = object(for: request) { [weak self] result in
