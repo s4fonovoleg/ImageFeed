@@ -80,15 +80,7 @@ final class ProfileViewController : UIViewController {
 		addDescriptionLabel()
 		updateProfileDetails()
 		
-		profileImageServiceObserver = NotificationCenter.default
-			.addObserver(
-				forName: ProfileImageService.DidChangeNotification,
-				object: nil,
-				queue: .main
-			) { [weak self] _ in
-				guard let self = self else { return }
-				self.updateAvatar()
-			}
+		addProfileImageServiceObserver()
 		updateAvatar()
 	}
 	
@@ -120,21 +112,23 @@ final class ProfileViewController : UIViewController {
 	
 	@objc private func logoutButtonTapped() {
 		let alert = UIAlertController(
-			title: "Выйти из профиля?",
-			message: nil,
+			title: "Пока, пока!",
+			message: "Уверены что хотите выйти?",
 			preferredStyle: .alert)
-		let logoutAction = UIAlertAction(title: "Выйти", style: .default) { _ in
+		let logoutAction = UIAlertAction(title: "Да", style: .default) { _ in
 			self.logout()
 		}
-		let cancelAction = UIAlertAction(title: "Отмена", style: .cancel)
+		let cancelAction = UIAlertAction(title: "Нет", style: .default)
 
 		alert.addAction(logoutAction)
 		alert.addAction(cancelAction)
+		alert.preferredAction = cancelAction
+		
 		present(alert, animated: true)
 	}
 	
 	private func logout() {
-		KeychainWrapper.standard.removeObject(forKey: TokenName)
+		OAuth2TokenStorage.removeToken()
 
 		HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
 		WKWebsiteDataStore.default().fetchDataRecords(
@@ -151,7 +145,10 @@ final class ProfileViewController : UIViewController {
 	}
 	
 	private func switchSplashViewController() {
-		guard let window = UIApplication.shared.windows.first else { fatalError("Invalid Configuration") }
+		guard let window = UIApplication.shared.windows.first else {
+			assertionFailure("Invalid Configuration")
+			return;
+		}
 		
 		let splashController = SplashViewController()
 		
@@ -192,6 +189,18 @@ final class ProfileViewController : UIViewController {
 			descriptionLabel.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
 			descriptionLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 16)
 		])
+	}
+	
+	private func addProfileImageServiceObserver() {
+		profileImageServiceObserver = NotificationCenter.default
+			.addObserver(
+				forName: ProfileImageService.DidChangeNotification,
+				object: nil,
+				queue: .main
+			) { [weak self] _ in
+				guard let self = self else { return }
+				self.updateAvatar()
+			}
 	}
 	
 	private func updateProfileDetails() {

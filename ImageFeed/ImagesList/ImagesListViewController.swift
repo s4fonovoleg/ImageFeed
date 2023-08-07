@@ -131,8 +131,14 @@ final class ImagesListViewController: UIViewController {
 				print(error)
 			}
 		}
+		
+		if let createdAt = photo.createdAt {
+			cell.dateLabel.text = dateFormatter.string(from: createdAt)
+		} else {
+			cell.dateLabel.text = String()
+		}
+		
 		cell.cellImage.kf.indicatorType = .activity
-		cell.dateLabel.text = dateFormatter.string(from: photo.createdAt ?? Date())
 		cell.likeButton.setImage(likeImage, for: .normal)
 		cell.delegate = self
 	}

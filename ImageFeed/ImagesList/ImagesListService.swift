@@ -31,9 +31,7 @@ final class ImagesListService {
 			
 			switch result {
 			case .success(let body):
-				for photo in body {
-					photos.append(Photo(photo))
-				}
+				photos.append(contentsOf: body.map({ Photo($0) }))
 				lastLoadedPage += 1
 				photosDidChanged()
 			case .failure(let error):
@@ -139,6 +137,6 @@ final class ImagesListService {
 		)
 		
 		self.photos[index] = newPhoto
-//		self.photos = self.photos.withReplaced(itemAt: index, newValue: newPhoto)
+		photosDidChanged()
 	}
 }

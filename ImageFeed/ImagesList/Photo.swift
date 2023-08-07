@@ -9,17 +9,18 @@ struct Photo: Decodable {
 	var largeImageURL: String
 	var isLiked: Bool
 	
+	static let dateFormatter = ISO8601DateFormatter()
+	
 	init(_ photoResult: PhotoResult) {
-		let dateFormatter = ISO8601DateFormatter()
-		let createdAt = dateFormatter.date(from:photoResult.CreatedAt)
+		let createdAt = Photo.dateFormatter.date(from:photoResult.createdAt)
 		
-		self.id = photoResult.Id
-		self.size = CGSize(width: photoResult.Width, height: photoResult.Height)
+		self.id = photoResult.id
+		self.size = CGSize(width: photoResult.width, height: photoResult.height)
 		self.createdAt = createdAt
-		self.welcomeDescription = photoResult.Description
-		self.thumbImageURL = photoResult.Urls.Thumb
-		self.largeImageURL = photoResult.Urls.Full
-		self.isLiked = photoResult.LikedByUser
+		self.welcomeDescription = photoResult.description
+		self.thumbImageURL = photoResult.urls.thumb
+		self.largeImageURL = photoResult.urls.full
+		self.isLiked = photoResult.likedByUser
 	}
 	
 	init(id: String,
