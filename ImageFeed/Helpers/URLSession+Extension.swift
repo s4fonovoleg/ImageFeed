@@ -30,6 +30,8 @@ extension URLSession {
 			   let response,
 			   let statusCode = (response as? HTTPURLResponse)?.statusCode
 			{
+				let dataStr = String(decoding: data, as: UTF8.self)
+				
 				if 200..<300 ~= statusCode {
 					fulfillCompletion(.success(data))
 				} else {

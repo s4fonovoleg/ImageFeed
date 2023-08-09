@@ -12,19 +12,6 @@ final class OAuth2Service {
 	private var task: URLSessionTask?
 	
 	private var lastCode: String?
-
-	/// Хранилище токена.
-	private let tokenStorage = OAuth2TokenStorage()
-	
-	/// Токен.
-	private var authToken: String {
-		get {
-			KeychainWrapper.standard.string(forKey: TokenName) ?? String()
-		}
-		set {
-			KeychainWrapper.standard.set(newValue, forKey: TokenName)
-		}
-	}
 	
 	/// Получение токена аутентификации.
 	/// - Parameters:
@@ -45,8 +32,8 @@ final class OAuth2Service {
 			switch result {
 			case .success(let body):
 				let authToken = body.accessToken
-				self.authToken = authToken
-				
+
+				OAuth2TokenStorage.token = authToken
 				completion(.success(authToken))
 			case .failure(let error):
 				self.lastCode = nil

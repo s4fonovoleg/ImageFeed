@@ -49,6 +49,9 @@
                                                     <rect key="frame" x="333" y="4" width="44" height="44"/>
                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                     <state key="normal" image="RedLike"/>
+                                                    <connections>
+                                                        <action selector="likeButtonClicked:" destination="pLX-jw-mpR" eventType="touchUpInside" id="OqU-PS-JEw"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                             <color key="backgroundColor" name="ypBlack"/>
@@ -146,6 +149,7 @@
                         <color key="backgroundColor" name="ypBlack"/>
                         <constraints>
                             <constraint firstItem="z6p-GW-Y6q" firstAttribute="bottom" secondItem="QPZ-E4-EXc" secondAttribute="bottom" constant="20" id="Fqr-QT-Rhh"/>
+                            <constraint firstItem="z6p-GW-Y6q" firstAttribute="bottom" secondItem="1Rm-1r-r1k" secondAttribute="bottom" constant="20" id="Jmz-e3-VDq"/>
                             <constraint firstItem="1Rm-1r-r1k" firstAttribute="bottom" secondItem="UUH-O2-wU2" secondAttribute="bottom" constant="51" id="KA6-KO-Bzg"/>
                             <constraint firstItem="1Rm-1r-r1k" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="RVS-Js-94B" secondAttribute="trailing" id="RZq-k8-ema"/>
                             <constraint firstItem="UUH-O2-wU2" firstAttribute="centerX" secondItem="1Rm-1r-r1k" secondAttribute="centerX" id="YFE-OZ-2ex"/>
@@ -153,6 +157,7 @@
                             <constraint firstItem="UUH-O2-wU2" firstAttribute="top" relation="greaterThanOrEqual" secondItem="1Rm-1r-r1k" secondAttribute="top" id="hlv-Ql-Nuh"/>
                             <constraint firstItem="RVS-Js-94B" firstAttribute="leading" secondItem="1Rm-1r-r1k" secondAttribute="leading" constant="9" id="reh-6F-3QJ"/>
                             <constraint firstItem="z6p-GW-Y6q" firstAttribute="trailing" secondItem="1Rm-1r-r1k" secondAttribute="trailing" id="s5Y-5U-crj"/>
+                            <constraint firstItem="z6p-GW-Y6q" firstAttribute="top" secondItem="1Rm-1r-r1k" secondAttribute="top" id="uke-hi-Y7M"/>
                             <constraint firstItem="z6p-GW-Y6q" firstAttribute="leading" secondItem="1Rm-1r-r1k" secondAttribute="leading" id="xHN-nO-jcb"/>
                             <constraint firstItem="RVS-Js-94B" firstAttribute="top" secondItem="QPZ-E4-EXc" secondAttribute="top" constant="56" id="y6v-Gi-8wo"/>
                         </constraints>

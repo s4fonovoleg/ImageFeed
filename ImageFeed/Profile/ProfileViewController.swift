@@ -1,5 +1,7 @@
 import UIKit
+import WebKit
 import Kingfisher
+import SwiftKeychainWrapper
 
 final class ProfileViewController : UIViewController {
 	private let profileService = ProfileService.shared
@@ -78,15 +80,7 @@ final class ProfileViewController : UIViewController {
 		addDescriptionLabel()
 		updateProfileDetails()
 		
-		profileImageServiceObserver = NotificationCenter.default
-			.addObserver(
-				forName: ProfileImageService.DidChangeNotification,
-				object: nil,
-				queue: .main
-			) { [weak self] _ in
-				guard let self = self else { return }
-				self.updateAvatar()
-			}
+		addProfileImageServiceObserver()
 		updateAvatar()
 	}
 	
@@ -117,7 +111,48 @@ final class ProfileViewController : UIViewController {
 	}
 	
 	@objc private func logoutButtonTapped() {
+		let alert = UIAlertController(
+			title: "Пока, пока!",
+			message: "Уверены что хотите выйти?",
+			preferredStyle: .alert)
+		let logoutAction = UIAlertAction(title: "Да", style: .default) { _ in
+			self.logout()
+		}
+		let cancelAction = UIAlertAction(title: "Нет", style: .default)
+
+		alert.addAction(logoutAction)
+		alert.addAction(cancelAction)
+		alert.preferredAction = cancelAction
 		
+		present(alert, animated: true)
+	}
+	
+	private func logout() {
+		OAuth2TokenStorage.removeToken()
+
+		HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+		WKWebsiteDataStore.default().fetchDataRecords(
+			ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+			records.forEach { record in
+				WKWebsiteDataStore.default().removeData(
+					ofTypes: record.dataTypes,
+					for: [record],
+					completionHandler: {})
+			}
+		}
+		
+		switchSplashViewController()
+	}
+	
+	private func switchSplashViewController() {
+		guard let window = UIApplication.shared.windows.first else {
+			assertionFailure("Invalid Configuration")
+			return;
+		}
+		
+		let splashController = SplashViewController()
+		
+		window.rootViewController = splashController
 	}
 	
 	// MARK: Name Label
@@ -154,6 +189,18 @@ final class ProfileViewController : UIViewController {
 			descriptionLabel.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
 			descriptionLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 16)
 		])
+	}
+	
+	private func addProfileImageServiceObserver() {
+		profileImageServiceObserver = NotificationCenter.default
+			.addObserver(
+				forName: ProfileImageService.DidChangeNotification,
+				object: nil,
+				queue: .main
+			) { [weak self] _ in
+				guard let self = self else { return }
+				self.updateAvatar()
+			}
 	}
 	
 	private func updateProfileDetails() {
