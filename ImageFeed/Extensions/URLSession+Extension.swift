@@ -31,6 +31,7 @@ extension URLSession {
 			   let statusCode = (response as? HTTPURLResponse)?.statusCode
 			{
 				let dataStr = String(decoding: data, as: UTF8.self)
+				print(dataStr)
 				
 				if 200..<300 ~= statusCode {
 					fulfillCompletion(.success(data))
@@ -43,7 +44,6 @@ extension URLSession {
 				fulfillCompletion(.failure(NetworkEror.urlSessionError))
 			}
 		}
-		task.resume()
 		
 		return task
 	}

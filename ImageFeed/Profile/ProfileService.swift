@@ -7,9 +7,7 @@ final class ProfileService {
 	
 	private var task: URLSessionTask?
 	
-	private(set) var profile: Profile?
-
-	private init() { }
+	var profile: Profile?
 	
 	func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
 		assert(Thread.isMainThread)

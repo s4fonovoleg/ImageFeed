@@ -12,4 +12,11 @@ struct Profile {
 		loginName = "@\(profileResult.username)"
 		bio = profileResult.bio ?? String()
 	}
+	
+	public init(username: String, name: String, loginName: String, bio: String) {
+		self.username = username
+		self.name = name
+		self.loginName = loginName
+		self.bio = bio
+	}
 }

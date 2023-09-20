@@ -2,18 +2,14 @@ import Foundation
 import SwiftKeychainWrapper
 
 final class ImagesListService {
-	private (set) var photos: [Photo] = []
+	private(set) var photos: [Photo] = []
 	
-	static let DidChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
-	
+	static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
 	private var lastLoadedPage = 1
-	
 	private let perPagePhotosCount = 10
-	
 	private let orderBy = "latest"
-	
-	private var task: URLSessionTask?
-	
+	private var fetchFhotosTask: URLSessionTask?
+	private var setIsLikedTask: URLSessionTask?
 	private let token: String
 	
 	init() {
@@ -21,12 +17,12 @@ final class ImagesListService {
 	}
 	
 	func fetchPhotosNextPage() {
-		if (task != nil) {
+		if (fetchFhotosTask != nil) {
 			return
 		}
 
 		let request = imagesListRequest(token: token)
-		let task = object(for: request) { [weak self] result in
+		fetchFhotosTask = object(for: request) { [weak self] result in
 			guard let self else { return }
 			
 			switch result {
@@ -38,16 +34,15 @@ final class ImagesListService {
 				print(error.localizedDescription)
 			}
 			
-			self.task = nil
+			self.fetchFhotosTask = nil
 		}
 		
-		self.task = task
-		task.resume()
+		fetchFhotosTask?.resume()
 	}
 	
-	private func photosDidChanged() {
+	func photosDidChanged() {
 		NotificationCenter.default.post(
-			name: ImagesListService.DidChangeNotification,
+			name: ImagesListService.didChangeNotification,
 			object: self,
 			userInfo: ["photos": photos])
 	}
@@ -95,9 +90,13 @@ final class ImagesListService {
 	}
 	
 	func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<LikeResult, Error>) -> Void) {
-		let request = likeRequest(token: token, isLike: isLike, photoId: photoId)
+		if setIsLikedTask != nil {
+			return
+		}
 		
-		let task = likeObject(for: request) { [weak self] result in
+		let request = likeRequest(token: token, isLike: isLike, photoId: photoId)
+
+		setIsLikedTask = likeObject(for: request) { [weak self] result in
 			guard let self else { return }
 
 			switch result {
@@ -109,7 +108,11 @@ final class ImagesListService {
 				print(error.localizedDescription)
 			}
 			completion(result)
+			
+			self.setIsLikedTask = nil
 		}
+		
+		setIsLikedTask?.resume()
 	}
 	
 	func likeRequest(token: String, isLike: Bool, photoId: String) -> URLRequest {

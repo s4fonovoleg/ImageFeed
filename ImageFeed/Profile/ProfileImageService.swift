@@ -10,9 +10,7 @@ final class ProfileImageService {
 	
 	private var task: URLSessionTask?
 	
-	private (set) var avatarURL: String?
-	
-	private init() { }
+	private(set) var avatarURL: String?
 	
 	func fetchProfileImageURL(username: String, _ completion: ((Result<String, Error>) -> Void)? = nil) {
 		assert(Thread.isMainThread)
@@ -32,10 +30,8 @@ final class ProfileImageService {
 				
 				guard let avatarURL else { break; }
 				
-				NotificationCenter.default.post(
-					name: ProfileImageService.DidChangeNotification,
-					object: self,
-					userInfo: ["URL": avatarURL])
+				postChangeNotification(avatarURL: avatarURL)
+				
 				completion?(.success(avatarURL))
 			case .failure(let error):
 				print(error.localizedDescription)
@@ -47,6 +43,13 @@ final class ProfileImageService {
 		
 		self.task = task
 		task.resume()
+	}
+	
+	func postChangeNotification(avatarURL: String) {
+		NotificationCenter.default.post(
+			name: ProfileImageService.DidChangeNotification,
+			object: self,
+			userInfo: ["URL": avatarURL])
 	}
 }
 
