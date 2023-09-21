@@ -3,14 +3,18 @@ import WebKit
 import Kingfisher
 import SwiftKeychainWrapper
 
-final class ProfileViewController : UIViewController {
-	private let profileService = ProfileService.shared
-	
-	private var profileImageServiceObserver: NSObjectProtocol?
+protocol ProfileViewControllerProtocol: AnyObject {
+	var presenter: ProfileViewPresenterProtocol? { get set }
+	func updateAvatar()
+}
+
+final class ProfileViewController : UIViewController, ProfileViewControllerProtocol {
+	var profileService = ProfileService.shared
+	var presenter: ProfileViewPresenterProtocol?
 	
 	// MARK: Private view properties
 	
-	private lazy var profileImageView: UIImageView = {
+	lazy var profileImageView: UIImageView = {
 		let profileImage = UIImage(named: "EmptyProfileImage")
 		let profileImageView = UIImageView(image: profileImage)
 
@@ -19,7 +23,7 @@ final class ProfileViewController : UIViewController {
 		return profileImageView
 	}()
 
-	private lazy var logoutButton: UIButton = {
+	lazy var logoutButton: UIButton = {
 		let logoutImage = UIImage(named: "LogoutImage")
 		
 		let logoutButton = UIButton.systemButton(
@@ -29,11 +33,12 @@ final class ProfileViewController : UIViewController {
 
 		logoutButton.translatesAutoresizingMaskIntoConstraints = false
 		logoutButton.tintColor = .ypRed
-
+		logoutButton.accessibilityIdentifier = "LogoutButton"
+		
 		return logoutButton
 	}()
 
-	private lazy var nameLabel: UILabel = {
+	lazy var nameLabel: UILabel = {
 		let nameLabel = UILabel()
 
 		nameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -44,7 +49,7 @@ final class ProfileViewController : UIViewController {
 		return nameLabel
 	}()
 
-	private lazy var loginNameLabel: UILabel = {
+	lazy var loginNameLabel: UILabel = {
 		let loginNameLabel = UILabel()
 
 		loginNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -55,7 +60,7 @@ final class ProfileViewController : UIViewController {
 		return loginNameLabel
 	}()
 
-	private lazy var descriptionLabel: UILabel = {
+	lazy var descriptionLabel: UILabel = {
 		let descriptionLabel = UILabel()
 		
 		descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -70,7 +75,8 @@ final class ProfileViewController : UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-
+		
+		presenter?.viewDidLoad()
 		view.backgroundColor = .ypBlack
 		
 		addProfileImageView()
@@ -79,8 +85,6 @@ final class ProfileViewController : UIViewController {
 		addLoginNameLabel()
 		addDescriptionLabel()
 		updateProfileDetails()
-		
-		addProfileImageServiceObserver()
 		updateAvatar()
 	}
 	
@@ -116,7 +120,7 @@ final class ProfileViewController : UIViewController {
 			message: "Уверены что хотите выйти?",
 			preferredStyle: .alert)
 		let logoutAction = UIAlertAction(title: "Да", style: .default) { _ in
-			self.logout()
+			self.presenter?.logout()
 		}
 		let cancelAction = UIAlertAction(title: "Нет", style: .default)
 
@@ -125,34 +129,6 @@ final class ProfileViewController : UIViewController {
 		alert.preferredAction = cancelAction
 		
 		present(alert, animated: true)
-	}
-	
-	private func logout() {
-		OAuth2TokenStorage.removeToken()
-
-		HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
-		WKWebsiteDataStore.default().fetchDataRecords(
-			ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
-			records.forEach { record in
-				WKWebsiteDataStore.default().removeData(
-					ofTypes: record.dataTypes,
-					for: [record],
-					completionHandler: {})
-			}
-		}
-		
-		switchSplashViewController()
-	}
-	
-	private func switchSplashViewController() {
-		guard let window = UIApplication.shared.windows.first else {
-			assertionFailure("Invalid Configuration")
-			return;
-		}
-		
-		let splashController = SplashViewController()
-		
-		window.rootViewController = splashController
 	}
 	
 	// MARK: Name Label
@@ -191,18 +167,6 @@ final class ProfileViewController : UIViewController {
 		])
 	}
 	
-	private func addProfileImageServiceObserver() {
-		profileImageServiceObserver = NotificationCenter.default
-			.addObserver(
-				forName: ProfileImageService.DidChangeNotification,
-				object: nil,
-				queue: .main
-			) { [weak self] _ in
-				guard let self = self else { return }
-				self.updateAvatar()
-			}
-	}
-	
 	private func updateProfileDetails() {
 		guard let profile = profileService.profile else { return }
 		
@@ -211,7 +175,7 @@ final class ProfileViewController : UIViewController {
 		self.descriptionLabel.text = profile.bio
 	}
 	
-	private func updateAvatar() {
+	func updateAvatar() {
 		guard
 			let profileImageURL = ProfileImageService.shared.avatarURL,
 			let url = URL(string: profileImageURL)
